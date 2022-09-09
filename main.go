@@ -25,6 +25,10 @@ var (
 )
 
 func main() {
+
+	http.HandleFunc("/login/mercedes/", mercedesLoginHandler)
+	http.HandleFunc("/login/mercedes/callback", mercedesCallbackHandler)
+
 	bot := tbot.New(ttoken)
 	c := bot.Client()
 	bot.HandleMessage("/info", func(m *tbot.Message) {
@@ -37,9 +41,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	http.HandleFunc("/login/mercedes/", mercedesLoginHandler)
-	http.HandleFunc("/login/mercedes/callback", mercedesCallbackHandler)
 
 	log.Panic(
 		http.ListenAndServe(":"+port, nil),
