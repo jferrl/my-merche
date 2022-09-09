@@ -46,7 +46,7 @@ func main() {
 	}
 
 	log.Panic(
-		http.ListenAndServe(":"+port, nil),
+		http.ListenAndServe("127.0.0.1:"+port, nil),
 	)
 }
 
