@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 
+	_ "github.com/heroku/x/hmetrics/onload"
 	"github.com/yanzay/tbot/v2"
 )
 
