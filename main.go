@@ -25,6 +25,9 @@ var (
 )
 
 func main() {
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
 
 	http.HandleFunc("/login/mercedes/", mercedesLoginHandler)
 	http.HandleFunc("/login/mercedes/callback", mercedesCallbackHandler)
