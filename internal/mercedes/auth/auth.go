@@ -30,6 +30,7 @@ func New(o Opts) *Authorizer {
 		clientID:     o.ClientID,
 		clientSecret: o.ClientSecret,
 		scope:        o.Scope,
+		redirectURI:  o.RedirectURI,
 	}
 }
 
