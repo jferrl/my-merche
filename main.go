@@ -47,7 +47,7 @@ func bootstrap() {
 
 	b.HandleMessage(bot.WithLoginHandler(bc))
 
-	e.Logger.Fatal(b.Start())
+	go b.Start()
 
 	e.GET("/", echo.HandlerFunc(routing.WithRootHandler()))
 	e.GET("/login/mercedes", echo.HandlerFunc(routing.WithMercedesLoginHandler(authorizer)))
