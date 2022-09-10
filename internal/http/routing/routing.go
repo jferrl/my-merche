@@ -10,6 +10,7 @@ type Handler func(c echo.Context) error
 
 type authorizer interface {
 	BuildMercedesLoginURL() string
+	GetMercedesAccessToken(code string) string
 }
 
 func WithRootHandler() Handler {
@@ -26,6 +27,10 @@ func WithMercedesLoginHandler(auth authorizer) Handler {
 
 func WithMercedesLoginHandlerCallback(auth authorizer) Handler {
 	return func(c echo.Context) error {
-		return c.String(http.StatusOK, "Logged in")
+		code := c.Request().URL.Query().Get("code")
+
+		token := auth.GetMercedesAccessToken(code)
+
+		return c.String(http.StatusOK, "Authorized: "+token)
 	}
 }

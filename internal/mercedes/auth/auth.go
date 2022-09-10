@@ -1,7 +1,14 @@
 package auth
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
+	"strings"
 )
 
 type Authorizer struct {
@@ -30,47 +37,41 @@ func (a *Authorizer) BuildMercedesLoginURL() string {
 	)
 }
 
-// func mercedesCallbackHandler(w http.ResponseWriter, r *http.Request) {
-// 	code := r.URL.Query().Get("code")
+func (a *Authorizer) GetMercedesAccessToken(code string) string {
+	authToken := base64.StdEncoding.EncodeToString([]byte(a.clientID + ":" + a.clientSecret))
 
-// 	getMercedesAccessToken(code)
-// }
+	data := url.Values{}
+	data.Set("grant_type", "authorization_code")
+	data.Set("redirect_uri", "https://my-merche.herokuapp.com/login/mercedes/callback")
+	data.Set("code", code)
 
-// func getMercedesAccessToken(code string) string {
-// 	authToken := base64.StdEncoding.EncodeToString([]byte("clientID" + ":" + "clientSecret"))
+	req, err := http.NewRequest(
+		http.MethodPost,
+		"https://id.mercedes-benz.com/as/token.oauth2",
+		strings.NewReader(data.Encode()),
+	)
+	if err != nil {
+		log.Panic("Request creation failed")
+	}
+	req.Header.Set("Authorization", "Basic "+authToken)
+	req.Header.Set("content-type", "application/x-www-form-urlencoded")
 
-// 	data := url.Values{}
-// 	data.Set("grant_type", "authorization_code")
-// 	data.Set("redirect_uri", "https://my-merche.herokuapp.com/login/mercedes/callback")
-// 	data.Set("code", code)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Panic("Request failed")
+	}
 
-// 	req, err := http.NewRequest(
-// 		http.MethodPost,
-// 		"https://id.mercedes-benz.com/as/token.oauth2",
-// 		strings.NewReader(data.Encode()),
-// 	)
-// 	if err != nil {
-// 		log.Panic("Request creation failed")
-// 	}
-// 	req.Header.Set("Authorization", "Basic "+authToken)
-// 	req.Header.Set("content-type", "application/x-www-form-urlencoded")
+	body, _ := ioutil.ReadAll(resp.Body)
 
-// 	resp, err := http.DefaultClient.Do(req)
-// 	if err != nil {
-// 		log.Panic("Request failed")
-// 	}
+	type mercedesAccessTokenResponse struct {
+		AccessToken  string `json:"access_token"`
+		TokenType    string `json:"token_type"`
+		RefreshToken string `json:"refresh_token"`
+		ExpiresIn    int    `json:"expires_in"`
+	}
 
-// 	body, _ := ioutil.ReadAll(resp.Body)
+	var res mercedesAccessTokenResponse
+	json.Unmarshal(body, &res)
 
-// 	type mercedesAccessTokenResponse struct {
-// 		AccessToken  string `json:"access_token"`
-// 		TokenType    string `json:"token_type"`
-// 		RefreshToken string `json:"refresh_token"`
-// 		ExpiresIn    int    `json:"expires_in"`
-// 	}
-
-// 	var res mercedesAccessTokenResponse
-// 	json.Unmarshal(body, &res)
-
-// 	return res.AccessToken
-// }
+	return res.AccessToken
+}
