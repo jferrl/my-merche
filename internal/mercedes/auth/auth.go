@@ -12,11 +12,17 @@ import (
 )
 
 type Authorizer struct {
-	clientID, clientSecret, scope string
+	clientID     string
+	clientSecret string
+	scope        string
+	redirectURI  string
 }
 
 type Opts struct {
-	ClientID, ClientSecret, Scope string
+	ClientID     string
+	ClientSecret string
+	Scope        string
+	RedirectURI  string
 }
 
 func New(o Opts) *Authorizer {
@@ -31,7 +37,7 @@ func (a *Authorizer) BuildMercedesLoginURL() string {
 	return fmt.Sprintf(
 		"https://id.mercedes-benz.com/as/authorization.oauth2?response_type=code&client_id=%v&redirect_uri=%v&scope=%v&state=%v",
 		a.clientID,
-		"https://my-merche.herokuapp.com/login/mercedes/callback",
+		a.redirectURI,
 		a.scope,
 		"login",
 	)
@@ -42,7 +48,7 @@ func (a *Authorizer) GetMercedesAccessToken(code string) string {
 
 	data := url.Values{}
 	data.Set("grant_type", "authorization_code")
-	data.Set("redirect_uri", "https://my-merche.herokuapp.com/login/mercedes/callback")
+	data.Set("redirect_uri", a.redirectURI)
 	data.Set("code", code)
 
 	req, err := http.NewRequest(

@@ -31,20 +31,24 @@ func main() {
 }
 
 func bootstrap() {
-	b := tbot.New(ttoken)
-	bc := b.Client()
-
-	b.HandleMessage(bot.WithAuthorizeHandler(bc))
-
 	authorizer := auth.New(
 		auth.Opts{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
 			Scope:        "mb:vehicle:mbdata:fuelstatus",
+			RedirectURI:  "https://my-merche.herokuapp.com/login/mercedes/callback",
 		},
 	)
 
 	e := echo.New()
+
+	b := tbot.New(ttoken)
+	bc := b.Client()
+
+	b.HandleMessage(bot.WithLoginHandler(bc))
+
+	e.Logger.Fatal(b.Start())
+
 	e.GET("/", echo.HandlerFunc(routing.WithRootHandler()))
 	e.GET("/login/mercedes", echo.HandlerFunc(routing.WithMercedesLoginHandler(authorizer)))
 	e.GET("/login/mercedes/callback", echo.HandlerFunc(routing.WithMercedesLoginHandlerCallback(authorizer)))
