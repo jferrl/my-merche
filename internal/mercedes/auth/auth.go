@@ -37,13 +37,15 @@ func New(o Opts) *Authorizer {
 		basicAuthToken: bat,
 		scope:          strings.Join(o.Scopes, " "),
 		redirectURI:    o.RedirectURI,
+		clientID:       o.ClientID,
+		clientSecret:   o.ClientSecret,
 		client:         cleanhttp.DefaultClient(),
 	}
 }
 
 func (a *Authorizer) BuildMercedesLoginURL() string {
 	return fmt.Sprintf(
-		"%v/authorization.oauth2?response_type=code&client_id=%v&redirect_uri=%v&scope=%v&state=%v",
+		"%s/authorization.oauth2?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
 		a.mercedesAuthURL,
 		a.clientID,
 		a.redirectURI,
