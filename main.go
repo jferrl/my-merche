@@ -11,6 +11,7 @@ import (
 
 	_ "github.com/heroku/x/hmetrics/onload"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/yanzay/tbot/v2"
 )
 
@@ -64,6 +65,11 @@ func bootstrap() {
 	botSvr.HandleMessage(bot.WithLoginHandler(bcli))
 
 	go botSvr.Start()
+
+	e.Use(middleware.Recover())
+	e.Use(middleware.Logger())
+	e.Use(middleware.RequestID())
+	e.Use(middleware.Secure())
 
 	e.GET("/", echo.HandlerFunc(routing.WithRootHandler()))
 	e.GET("/login/mercedes", echo.HandlerFunc(routing.WithMercedesLoginHandler(authorizer)))

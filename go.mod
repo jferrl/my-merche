@@ -7,6 +7,11 @@ require github.com/yanzay/tbot/v2 v2.2.0
 require github.com/heroku/x v0.0.52
 
 require (
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
+)
+
+require (
 	github.com/hashicorp/go-cleanhttp v0.5.2
 	github.com/labstack/echo/v4 v4.9.0
 	github.com/labstack/gommon v0.3.1 // indirect
