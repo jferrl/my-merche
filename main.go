@@ -57,7 +57,6 @@ func bootstrap() {
 	)
 	bcli := botSvr.Client()
 
-	botSvr.Use(bot.WithStat())
 	botSvr.Use(bot.WithSecure(bot.Allowlist{
 		admin: true,
 	}, bcli))
