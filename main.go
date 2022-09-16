@@ -36,7 +36,7 @@ func main() {
 func bootstrap() {
 	authorizer := auth.New(
 		auth.Opts{
-			MercedesAuthURL: "https://id.mercedes-benz.com/as/",
+			MercedesAuthURL: "https://id.mercedes-benz.com/as",
 			ClientID:        clientID,
 			ClientSecret:    clientSecret,
 			Scopes: []string{
