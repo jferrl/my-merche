@@ -34,12 +34,13 @@ func New(o Opts) *Authorizer {
 	bat := base64.StdEncoding.EncodeToString([]byte(o.ClientID + ":" + o.ClientSecret))
 
 	return &Authorizer{
-		basicAuthToken: bat,
-		scope:          strings.Join(o.Scopes, " "),
-		redirectURI:    o.RedirectURI,
-		clientID:       o.ClientID,
-		clientSecret:   o.ClientSecret,
-		client:         cleanhttp.DefaultClient(),
+		basicAuthToken:  bat,
+		scope:           strings.Join(o.Scopes, " "),
+		mercedesAuthURL: o.MercedesAuthURL,
+		redirectURI:     o.RedirectURI,
+		clientID:        o.ClientID,
+		clientSecret:    o.ClientSecret,
+		client:          cleanhttp.DefaultClient(),
 	}
 }
 
