@@ -64,6 +64,7 @@ func bootstrap() {
 		bot_admin: true,
 	}, bcli))
 
+	botSvr.HandleMessage(bot.WithStartHandler(bcli))
 	botSvr.HandleMessage(bot.WithLoginHandler(bcli))
 
 	go botSvr.Start()
