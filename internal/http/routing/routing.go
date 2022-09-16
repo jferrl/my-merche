@@ -1,8 +1,10 @@
 package routing
 
 import (
+	"context"
 	"net/http"
 
+	"github.com/jferrl/my-merche/internal/mercedes/auth"
 	"github.com/labstack/echo/v4"
 )
 
@@ -10,7 +12,7 @@ type Handler func(c echo.Context) error
 
 type authorizer interface {
 	BuildMercedesLoginURL() string
-	GetMercedesAccessToken(code string) string
+	ExchangeAuthCodeWithAccessToken(ctx context.Context, code string) (*auth.OAuthAccessToken, error)
 }
 
 func WithRootHandler() Handler {
@@ -29,8 +31,11 @@ func WithMercedesLoginHandlerCallback(auth authorizer) Handler {
 	return func(c echo.Context) error {
 		code := c.Request().URL.Query().Get("code")
 
-		token := auth.GetMercedesAccessToken(code)
+		_, err := auth.ExchangeAuthCodeWithAccessToken(c.Request().Context(), code)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "Error executing OAuth workflow")
+		}
 
-		return c.String(http.StatusOK, "Authorized: "+token)
+		return c.String(http.StatusOK, "Authorized")
 	}
 }

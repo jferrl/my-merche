@@ -7,6 +7,7 @@ require github.com/yanzay/tbot/v2 v2.2.0
 require github.com/heroku/x v0.0.52
 
 require (
+	github.com/hashicorp/go-cleanhttp v0.5.2
 	github.com/labstack/echo/v4 v4.9.0
 	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect
