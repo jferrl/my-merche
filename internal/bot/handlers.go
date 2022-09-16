@@ -20,7 +20,7 @@ func WithStartHandler(c *tbot.Client) (string, Handler) {
 
 		var res string
 		for _, cmd := range *cmds {
-			res += fmt.Sprintf("%s: %s\n", cmd.Command, cmd.Description)
+			res += fmt.Sprintf("/%s - %s\n", cmd.Command, cmd.Description)
 		}
 
 		c.SendMessage(m.Chat.ID, res)
