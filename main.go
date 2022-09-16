@@ -18,12 +18,14 @@ import (
 var (
 	port = os.Getenv("PORT")
 
-	ttoken = os.Getenv("TELEGRAM_TOKEN")
+	telegram_token = os.Getenv("TELEGRAM_TOKEN")
 
-	clientID     = os.Getenv("MERCEDES_CLIENT_ID")
-	clientSecret = os.Getenv("MERCEDES_CLIENT_SECRET")
+	mercedes_client_id      = os.Getenv("MERCEDES_CLIENT_ID")
+	merdeces_client_secret  = os.Getenv("MERCEDES_CLIENT_SECRET")
+	mercedes_login_callback = os.Getenv("MERCEDES_LOGIN_CALLBACK")
+	mercedes_auth_url       = os.Getenv("MERCEDES_AUTH_URL")
 
-	admin = os.Getenv("BOT_ADMIN")
+	bot_admin = os.Getenv("BOT_ADMIN")
 )
 
 func main() {
@@ -37,29 +39,29 @@ func main() {
 func bootstrap() {
 	authorizer := auth.New(
 		auth.Opts{
-			MercedesAuthURL: "https://id.mercedes-benz.com/as",
-			ClientID:        clientID,
-			ClientSecret:    clientSecret,
+			MercedesAuthURL: mercedes_auth_url,
+			ClientID:        mercedes_client_id,
+			ClientSecret:    merdeces_client_secret,
 			Scopes: []string{
 				"mb:vehicle:mbdata:fuelstatus",
 				"mb:vehicle:mbdata:payasyoudrive",
 				"mb:vehicle:mbdata:vehiclelock",
 				"mb:vehicle:mbdata:vehiclestatus",
 			},
-			RedirectURI: "https://my-merche.herokuapp.com/login/mercedes/callback",
+			RedirectURI: mercedes_login_callback,
 		},
 	)
 
 	e := echo.New()
 
-	botSvr := tbot.New(ttoken,
+	botSvr := tbot.New(telegram_token,
 		tbot.WithHTTPClient(cleanhttp.DefaultClient()),
 		tbot.WithLogger(e.Logger),
 	)
 	bcli := botSvr.Client()
 
 	botSvr.Use(bot.WithSecure(bot.Allowlist{
-		admin: true,
+		bot_admin: true,
 	}, bcli))
 
 	botSvr.HandleMessage(bot.WithLoginHandler(bcli))
