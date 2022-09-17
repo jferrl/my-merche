@@ -31,8 +31,6 @@ func WithMercedesLoginHandlerCallback(auth authorizer) Handler {
 	return func(c echo.Context) error {
 		code := c.Request().URL.Query().Get("code")
 
-		c.Logger().Infof("Auth code: %s", code)
-
 		_, err := auth.ExchangeAuthCodeWithAccessToken(c.Request().Context(), code)
 		if err != nil {
 			c.Logger().Errorf("Error exchanging code with access token: %v", err)
