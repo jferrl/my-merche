@@ -13,6 +13,7 @@ type Handler func(c echo.Context) error
 type authorizer interface {
 	AuthCodeURL(state string, opts ...oauth2.AuthCodeOption) string
 	Exchange(ctx context.Context, code string, opts ...oauth2.AuthCodeOption) (*oauth2.Token, error)
+	Client(ctx context.Context, t *oauth2.Token) *http.Client
 }
 
 type collector interface {
@@ -31,15 +32,21 @@ func WithMercedesLoginHandler(auth authorizer) Handler {
 	}
 }
 
-func WithMercedesLoginHandlerCallback(auth authorizer, c collector) Handler {
+func WithMercedesLoginHandlerCallback(auth authorizer, coll collector) Handler {
 	return func(c echo.Context) error {
+		ctx := c.Request().Context()
+
 		code := c.Request().URL.Query().Get("code")
 
-		_, err := auth.Exchange(c.Request().Context(), code)
+		t, err := auth.Exchange(ctx, code)
 		if err != nil {
 			c.Logger().Errorf("Error exchanging code with access token: %v", err)
 			return c.String(http.StatusBadRequest, "Error executing OAuth workflow")
 		}
+
+		authClient := auth.Client(ctx, t)
+
+		coll.Bootstrap(authClient)
 
 		return c.String(http.StatusOK, "Authorized")
 	}
