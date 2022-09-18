@@ -45,7 +45,7 @@ func (c *Collector) Collect(ctx context.Context) (Resouces, error) {
 		return nil, err
 	}
 
-	var resources Resouces
+	resources := make(Resouces)
 	for _, ls := range vls {
 		v := reflect.Indirect(reflect.ValueOf(ls))
 		for i := 0; i < v.NumField(); i++ {
