@@ -16,7 +16,7 @@ type Resource struct {
 
 type ResouceID string
 
-type Resouces map[ResouceID]any
+type Resouces map[ResouceID]Resource
 
 type VehicleID string
 
@@ -49,7 +49,16 @@ func (c *Collector) Collect(ctx context.Context) (Resouces, error) {
 	for _, ls := range vls {
 		v := reflect.Indirect(reflect.ValueOf(ls))
 		for i := 0; i < v.NumField(); i++ {
-			resources[ResouceID(v.Field(i).Type().Name())] = v.Field(i).Interface()
+
+			resource, ok := v.Field(i).Interface().(*merche.Resource)
+			if !ok {
+				continue
+			}
+
+			resources[ResouceID(v.Field(i).Type().Name())] = Resource{
+				Value:     *resource.Value,
+				Timestamp: *resource.Timestamp,
+			}
 		}
 	}
 
