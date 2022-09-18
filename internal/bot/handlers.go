@@ -57,7 +57,7 @@ func WithVehicleStatusHandler(cxt context.Context, c *tbot.Client, cll collector
 func createKeyValuePairs(m mercedes.Resouces) string {
 	b := new(bytes.Buffer)
 	for key, value := range m {
-		fmt.Fprintf(b, "%s=\"%v\"\n", key, value)
+		fmt.Fprintf(b, "%s=\"%v\"\n", key, &value)
 	}
 	return b.String()
 }
