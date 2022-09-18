@@ -42,6 +42,8 @@ func WithLoginHandler(c *tbot.Client) (string, Handler) {
 
 func WithVehicleStatusHandler(cxt context.Context, c *tbot.Client, cll collector) (string, Handler) {
 	return "/status", func(m *tbot.Message) {
+		c.SendChatAction(m.Chat.ID, tbot.ActionTyping)
+
 		resources, err := cll.Collect(cxt)
 		if err != nil {
 			c.SendMessage(m.Chat.ID, err.Error())

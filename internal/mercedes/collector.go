@@ -47,7 +47,7 @@ func (c *Collector) Collect(ctx context.Context) (Resouces, error) {
 
 	var resources Resouces
 	for _, ls := range vls {
-		v := reflect.ValueOf(ls)
+		v := reflect.ValueOf(&ls)
 		for i := 0; i < v.NumField(); i++ {
 			resources[ResouceID(v.Field(i).Type().Name())] = v.Field(i).Interface()
 		}
