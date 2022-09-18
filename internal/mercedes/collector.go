@@ -2,9 +2,9 @@ package mercedes
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
-	"reflect"
 
 	"github.com/jferrl/go-merche"
 )
@@ -35,32 +35,20 @@ func (c *Collector) Bootstrap(httpClient *http.Client) {
 	c.m = merche.NewClient(httpClient)
 }
 
-func (c *Collector) Collect(ctx context.Context) (Resouces, error) {
+func (c *Collector) Collect(ctx context.Context) (string, error) {
 	if c.m == nil {
-		return nil, errors.New("mercedes api client must be defined")
+		return "", errors.New("mercedes api client must be defined")
 	}
 
 	vls, _, err := c.m.VehicleLockStatus.GetVehicleLockStatus(ctx, &merche.Options{VehicleID: string(c.vehicle)})
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	resources := make(Resouces)
-	for _, ls := range vls {
-		v := reflect.Indirect(reflect.ValueOf(ls))
-		for i := 0; i < v.NumField(); i++ {
-
-			resource, ok := v.Field(i).Interface().(*merche.Resource)
-			if !ok {
-				continue
-			}
-
-			resources[ResouceID(v.Field(i).Type().Name())] = Resource{
-				Value:     *resource.Value,
-				Timestamp: *resource.Timestamp,
-			}
-		}
+	e, err := json.Marshal(&vls)
+	if err != nil {
+		return "", err
 	}
 
-	return resources, nil
+	return string(e), nil
 }

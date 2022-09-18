@@ -1,16 +1,14 @@
 package bot
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 
-	"github.com/jferrl/my-merche/internal/mercedes"
 	"github.com/yanzay/tbot/v2"
 )
 
 type collector interface {
-	Collect(ctx context.Context) (mercedes.Resouces, error)
+	Collect(ctx context.Context) (string, error)
 }
 
 type Handler func(m *tbot.Message)
@@ -50,14 +48,6 @@ func WithVehicleStatusHandler(cxt context.Context, c *tbot.Client, cll collector
 			return
 		}
 
-		c.SendMessage(m.Chat.ID, createKeyValuePairs(resources))
+		c.SendMessage(m.Chat.ID, resources)
 	}
-}
-
-func createKeyValuePairs(m mercedes.Resouces) string {
-	b := new(bytes.Buffer)
-	for key, value := range m {
-		fmt.Fprintf(b, "%s=\"%v\"\n", key, &value)
-	}
-	return b.String()
 }
