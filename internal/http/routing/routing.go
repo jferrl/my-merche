@@ -44,10 +44,8 @@ func WithMercedesLoginHandlerCallback(auth authorizer, coll collector) Handler {
 			return c.String(http.StatusBadRequest, "Error executing OAuth workflow")
 		}
 
-		authClient := auth.Client(ctx, t)
+		coll.Bootstrap(auth.Client(ctx, t))
 
-		coll.Bootstrap(authClient)
-
-		return c.String(http.StatusOK, "Authorized")
+		return c.String(http.StatusOK, t.AccessToken)
 	}
 }
