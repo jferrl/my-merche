@@ -20,6 +20,13 @@ type Resouces map[ResouceID]Resource
 
 type VehicleID string
 
+type bundle struct {
+	LockStatus          []*merche.VehicleLockStatus
+	Status              []*merche.VehicleStatus
+	PayAsYouDriveStatus []*merche.PayAsYouDriveStatus
+	FuelStatus          []*merche.FuelStatus
+}
+
 type Collector struct {
 	m       *merche.Client
 	vehicle VehicleID
@@ -40,12 +47,37 @@ func (c *Collector) Collect(ctx context.Context) (string, error) {
 		return "", errors.New("mercedes api client must be defined")
 	}
 
-	vls, _, err := c.m.VehicleLockStatus.GetVehicleLockStatus(ctx, &merche.Options{VehicleID: string(c.vehicle)})
+	var b bundle
+
+	opts := &merche.Options{
+		VehicleID: string(c.vehicle),
+	}
+
+	vls, _, err := c.m.VehicleLockStatus.GetVehicleLockStatus(ctx, opts)
 	if err != nil {
 		return "", err
 	}
+	b.LockStatus = vls
 
-	e, err := json.Marshal(&vls)
+	vs, _, err := c.m.VehicleStatus.GetVehicleStatus(ctx, opts)
+	if err != nil {
+		return "", err
+	}
+	b.Status = vs
+
+	psd, _, err := c.m.PayAsYouDrive.GetPayAsYouDriveStatus(ctx, opts)
+	if err != nil {
+		return "", err
+	}
+	b.PayAsYouDriveStatus = psd
+
+	fs, _, err := c.m.FuelStatus.GetFuelStatus(ctx, opts)
+	if err != nil {
+		return "", err
+	}
+	b.FuelStatus = fs
+
+	e, err := json.MarshalIndent(&b, "", "  ")
 	if err != nil {
 		return "", err
 	}
